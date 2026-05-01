@@ -4,6 +4,7 @@ import { CheckCircle2, XCircle, Share2, RefreshCw, Trophy, ArrowRight } from "lu
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
+import { shuffleArray } from "@/lib/quiz-utils";
 
 const QUIZ_QUESTIONS = [
   {
@@ -98,16 +99,6 @@ const QUIZ_QUESTIONS = [
     relatedPage: "/how-to-vote"
   }
 ];
-
-// Helper to shuffle array
-function shuffleArray<T>(array: T[]): T[] {
-  const newArr = [...array];
-  for (let i = newArr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-  }
-  return newArr;
-}
 
 export default function Quiz() {
   const [questions, setQuestions] = useState(QUIZ_QUESTIONS);

@@ -1,0 +1,17 @@
+{
+  "name": "The People's Election Guide",
+  "short_name": "Election Guide",
+  "description": "Nonpartisan civic guidance on Indian elections.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 import { Router, type IRouter } from "express";
+import rateLimit from "express-rate-limit";
 import { eq } from "drizzle-orm";
 import { db, conversations, messages } from "@workspace/db";
 import { ai } from "@workspace/integrations-gemini-ai";
+import { sanitizeUserContent } from "../../lib/sanitize";
 import {
   CreateGeminiConversationBody,
   GetGeminiConversationParams,
@@ -12,6 +14,16 @@ import {
 } from "@workspace/api-zod";
 
 const router: IRouter = Router();
+
+const sendMessageRateLimiter = rateLimit({
+  windowMs: 60_000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Too many requests. Please wait a minute and try again.",
+  },
+});
 
 const SYSTEM_INSTRUCTION = `You are the People's Election Guide — a friendly, nonpartisan civic assistant that helps Indian citizens understand the election process. You explain things in simple, plain language that anyone can understand, regardless of their education level.
 
@@ -130,6 +142,7 @@ router.get(
 
 router.post(
   "/gemini/conversations/:id/messages",
+  sendMessageRateLimiter,
   async (req, res): Promise<void> => {
     const params = SendGeminiMessageParams.safeParse(req.params);
     if (!params.success) {
@@ -140,6 +153,14 @@ router.post(
     const bodyParsed = SendGeminiMessageBody.safeParse(req.body);
     if (!bodyParsed.success) {
       res.status(400).json({ error: bodyParsed.error.message });
+      return;
+    }
+
+    const sanitizedContent = sanitizeUserContent(bodyParsed.data.content);
+    if (!sanitizedContent) {
+      res
+        .status(400)
+        .json({ error: "Message content cannot be empty after sanitization." });
       return;
     }
 
@@ -156,7 +177,7 @@ router.post(
     await db.insert(messages).values({
       conversationId: params.data.id,
       role: "user",
-      content: bodyParsed.data.content,
+      content: sanitizedContent,
     });
 
     const allMessages = await db
