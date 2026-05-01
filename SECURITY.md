@@ -8,7 +8,7 @@ Security fixes are applied to the latest default branch.
 
 Please report security issues privately and responsibly.
 
-1. Email: security@example.com
+1. Email: security@prompt-wars-election-guide.dev
 2. Include reproduction steps, impact, and affected files/routes.
 3. If possible, include a proof-of-concept with minimal data.
 

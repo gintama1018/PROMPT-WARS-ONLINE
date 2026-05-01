@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://example.com/sitemap.xml
+Sitemap: https://prompt-wars-election-guide.replit.dev/sitemap.xml

@@ -20,6 +20,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-[100dvh] flex flex-col bg-background text-foreground">
+      {/* Skip to main content link for accessibility */}
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-primary focus:text-white focus:px-4 focus:py-2"
+      >
+        Skip to main content
+      </a>
+
       <header className="sticky top-0 z-50 w-full border-b bg-primary text-primary-foreground shadow-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="font-serif font-bold text-xl tracking-tight flex items-center gap-2">
@@ -83,7 +91,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 flex flex-col relative">
+      <main className="flex-1 flex flex-col relative" id="main">
         <AnimatePresence mode="wait">
           <motion.div
             key={location}

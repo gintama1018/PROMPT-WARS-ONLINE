@@ -7,6 +7,7 @@
     "build": "corepack pnpm run typecheck && corepack pnpm -r --if-present run build",
     "lint": "corepack pnpm -r --if-present run lint",
     "test": "corepack pnpm -r --if-present run test",
+    "test:coverage": "corepack pnpm -r --if-present run test:coverage",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "typecheck:libs": "tsc --build",

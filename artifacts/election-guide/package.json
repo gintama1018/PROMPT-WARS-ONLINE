@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
