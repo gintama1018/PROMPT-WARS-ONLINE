@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "zk0x8aKPl5SLqUaUB2nW7"
+uri = "file://README.md"
+type = "text"
+title = "The People's Election Guide — README"
