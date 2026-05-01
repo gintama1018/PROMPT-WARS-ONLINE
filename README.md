@@ -841,16 +841,44 @@ Our GitHub Actions workflow runs on every push:
 
 ## 🚀 Deployment
 
-**Auto-deployed on push via GitHub Actions**
+### Quick Deployment to Render
 
-Environment setup on Replit:
-```
-DATABASE_URL → PostgreSQL
-GEMINI_API_KEY → Google AI credentials  
-NODE_ENV → production
+The easiest way to deploy is using Render's Blueprint feature:
+
+1. **Push to GitHub**
+   ```bash
+   git push origin main
+   ```
+
+2. **Deploy on Render**
+   - Go to https://dashboard.render.com
+   - Click "New +" → "Blueprint"
+   - Select this repository
+   - Render auto-detects `render.yaml`
+   - Set `GEMINI_API_KEY` environment variable
+   - Click "Create Blueprint"
+
+3. **Verify Deployment**
+   ```bash
+   curl https://election-guide-api.onrender.com/api/healthz
+   ```
+
+### Deployment Guides
+
+- **[Render Deployment](./RENDER.md)** - Complete Render setup guide
+- **[Deployment Checklist](./DEPLOYMENT_CHECKLIST.md)** - Step-by-step checklist
+
+### Docker
+
+Run locally with Docker Compose:
+
+```bash
+docker-compose up
 ```
 
-Health check: `GET /api/healthz`
+Access at:
+- Frontend: http://localhost:5173
+- API: http://localhost:8080
 
 ---
 

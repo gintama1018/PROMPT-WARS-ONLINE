@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: election-guide-db
+    environment:
+      POSTGRES_USER: election_guide_user
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: election_guide
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U election_guide_user -d election_guide"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Server
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    container_name: election-guide-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 8080
+      DATABASE_URL: postgresql://election_guide_user:postgres@postgres:5432/election_guide
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-replace-with-your-key}
+      AI_INTEGRATIONS_GEMINI_BASE_URL: https://generativelanguage.googleapis.com/v1beta/openai/
+      AI_INTEGRATIONS_GEMINI_API_KEY: ${AI_INTEGRATIONS_GEMINI_API_KEY:-replace-with-your-key}
+      SESSION_SECRET: dev-secret-change-in-production
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./artifacts/api-server:/app/artifacts/api-server
+      - ./lib:/app/lib
+    command: sh -c "cd lib/db && pnpm run push && cd /app && pnpm --filter @workspace/api-server run dev"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend (Development)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    container_name: election-guide-frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      VITE_API_URL: http://localhost:8080/api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./artifacts/election-guide:/app/artifacts/election-guide
+      - ./lib:/app/lib
+    command: sh -c "pnpm --filter @workspace/election-guide run dev"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: election-guide-network

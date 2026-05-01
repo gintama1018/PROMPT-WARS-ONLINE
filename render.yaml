@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: election-guide-api
+    env: node
+    plan: standard
+    buildCommand: pnpm install --frozen-lockfile && pnpm run build
+    startCommand: pnpm --filter @workspace/api-server run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+    databases:
+      - name: election-guide-db
+        databaseName: election_guide
+        user: election_guide_user
+        plan: standard
+    preDeployCommand: cd lib/db && pnpm run push
+
+  - type: web
+    name: election-guide-frontend
+    env: node
+    plan: standard
+    buildCommand: pnpm install --frozen-lockfile && pnpm run build
+    startCommand: pnpm --filter @workspace/election-guide run serve
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_URL
+        value: https://election-guide-api.onrender.com/api
+    routes:
+      - path: /
+        destination: /artifacts/election-guide/dist
+      - path: /api/*
+        destination: https://election-guide-api.onrender.com/api/*
+
+databases:
+  - name: election-guide-db
+    databaseName: election_guide
+    user: election_guide_user
+    plan: standard

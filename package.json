@@ -11,7 +11,11 @@
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "typecheck:libs": "tsc --build",
-    "typecheck": "corepack pnpm run typecheck:libs && corepack pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "corepack pnpm run typecheck:libs && corepack pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck",
+    "dev": "pnpm --filter @workspace/api-server run dev & pnpm --filter @workspace/election-guide run dev",
+    "docker:build": "docker build -t prompt-wars-election-guide .",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down"
   },
   "private": true,
   "devDependencies": {
