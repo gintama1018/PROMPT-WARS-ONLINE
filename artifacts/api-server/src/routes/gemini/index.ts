@@ -1,19 +1,19 @@
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
-import { db, conversations as conversationsTable, messages as messagesTable } from "@workspace/db";
-import { anthropic } from "@workspace/integrations-anthropic-ai";
+import { db, conversations, messages } from "@workspace/db";
+import { ai } from "@workspace/integrations-gemini-ai";
 import {
-  CreateAnthropicConversationBody,
-  GetAnthropicConversationParams,
-  DeleteAnthropicConversationParams,
-  ListAnthropicMessagesParams,
-  SendAnthropicMessageParams,
-  SendAnthropicMessageBody,
+  CreateGeminiConversationBody,
+  GetGeminiConversationParams,
+  DeleteGeminiConversationParams,
+  ListGeminiMessagesParams,
+  SendGeminiMessageParams,
+  SendGeminiMessageBody,
 } from "@workspace/api-zod";
 
 const router: IRouter = Router();
 
-const SYSTEM_PROMPT = `You are the People's Election Guide — a friendly, nonpartisan civic assistant that helps Indian citizens understand the election process. You explain things in simple, plain language that anyone can understand, regardless of their education level.
+const SYSTEM_INSTRUCTION = `You are the People's Election Guide — a friendly, nonpartisan civic assistant that helps Indian citizens understand the election process. You explain things in simple, plain language that anyone can understand, regardless of their education level.
 
 Your core rules:
 - ALWAYS remain strictly nonpartisan — never express opinions about political parties, candidates, or policies
@@ -35,33 +35,33 @@ You help with topics like:
 - Different types of elections in India
 - Filing complaints about election violations
 
-Disclaimer reminder: For official decisions, always verify with your local Election Commission.`;
+Reminder: For official decisions, always verify with your local Election Commission.`;
 
-router.get("/anthropic/conversations", async (_req, res): Promise<void> => {
-  const conversations = await db
+router.get("/gemini/conversations", async (_req, res): Promise<void> => {
+  const result = await db
     .select()
-    .from(conversationsTable)
-    .orderBy(conversationsTable.createdAt);
-  res.json(conversations);
+    .from(conversations)
+    .orderBy(conversations.createdAt);
+  res.json(result);
 });
 
-router.post("/anthropic/conversations", async (req, res): Promise<void> => {
-  const parsed = CreateAnthropicConversationBody.safeParse(req.body);
+router.post("/gemini/conversations", async (req, res): Promise<void> => {
+  const parsed = CreateGeminiConversationBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
 
   const [conversation] = await db
-    .insert(conversationsTable)
+    .insert(conversations)
     .values({ title: parsed.data.title })
     .returning();
 
   res.status(201).json(conversation);
 });
 
-router.get("/anthropic/conversations/:id", async (req, res): Promise<void> => {
-  const params = GetAnthropicConversationParams.safeParse(req.params);
+router.get("/gemini/conversations/:id", async (req, res): Promise<void> => {
+  const params = GetGeminiConversationParams.safeParse(req.params);
   if (!params.success) {
     res.status(400).json({ error: params.error.message });
     return;
@@ -69,35 +69,35 @@ router.get("/anthropic/conversations/:id", async (req, res): Promise<void> => {
 
   const [conversation] = await db
     .select()
-    .from(conversationsTable)
-    .where(eq(conversationsTable.id, params.data.id));
+    .from(conversations)
+    .where(eq(conversations.id, params.data.id));
 
   if (!conversation) {
     res.status(404).json({ error: "Conversation not found" });
     return;
   }
 
-  const messages = await db
+  const msgs = await db
     .select()
-    .from(messagesTable)
-    .where(eq(messagesTable.conversationId, params.data.id))
-    .orderBy(messagesTable.createdAt);
+    .from(messages)
+    .where(eq(messages.conversationId, params.data.id))
+    .orderBy(messages.createdAt);
 
-  res.json({ ...conversation, messages });
+  res.json({ ...conversation, messages: msgs });
 });
 
 router.delete(
-  "/anthropic/conversations/:id",
+  "/gemini/conversations/:id",
   async (req, res): Promise<void> => {
-    const params = DeleteAnthropicConversationParams.safeParse(req.params);
+    const params = DeleteGeminiConversationParams.safeParse(req.params);
     if (!params.success) {
       res.status(400).json({ error: params.error.message });
       return;
     }
 
     const [deleted] = await db
-      .delete(conversationsTable)
-      .where(eq(conversationsTable.id, params.data.id))
+      .delete(conversations)
+      .where(eq(conversations.id, params.data.id))
       .returning();
 
     if (!deleted) {
@@ -110,34 +110,34 @@ router.delete(
 );
 
 router.get(
-  "/anthropic/conversations/:id/messages",
+  "/gemini/conversations/:id/messages",
   async (req, res): Promise<void> => {
-    const params = ListAnthropicMessagesParams.safeParse(req.params);
+    const params = ListGeminiMessagesParams.safeParse(req.params);
     if (!params.success) {
       res.status(400).json({ error: params.error.message });
       return;
     }
 
-    const messages = await db
+    const msgs = await db
       .select()
-      .from(messagesTable)
-      .where(eq(messagesTable.conversationId, params.data.id))
-      .orderBy(messagesTable.createdAt);
+      .from(messages)
+      .where(eq(messages.conversationId, params.data.id))
+      .orderBy(messages.createdAt);
 
-    res.json(messages);
+    res.json(msgs);
   }
 );
 
 router.post(
-  "/anthropic/conversations/:id/messages",
+  "/gemini/conversations/:id/messages",
   async (req, res): Promise<void> => {
-    const params = SendAnthropicMessageParams.safeParse(req.params);
+    const params = SendGeminiMessageParams.safeParse(req.params);
     if (!params.success) {
       res.status(400).json({ error: params.error.message });
       return;
     }
 
-    const bodyParsed = SendAnthropicMessageBody.safeParse(req.body);
+    const bodyParsed = SendGeminiMessageBody.safeParse(req.body);
     if (!bodyParsed.success) {
       res.status(400).json({ error: bodyParsed.error.message });
       return;
@@ -145,15 +145,15 @@ router.post(
 
     const [conversation] = await db
       .select()
-      .from(conversationsTable)
-      .where(eq(conversationsTable.id, params.data.id));
+      .from(conversations)
+      .where(eq(conversations.id, params.data.id));
 
     if (!conversation) {
       res.status(404).json({ error: "Conversation not found" });
       return;
     }
 
-    await db.insert(messagesTable).values({
+    await db.insert(messages).values({
       conversationId: params.data.id,
       role: "user",
       content: bodyParsed.data.content,
@@ -161,13 +161,13 @@ router.post(
 
     const allMessages = await db
       .select()
-      .from(messagesTable)
-      .where(eq(messagesTable.conversationId, params.data.id))
-      .orderBy(messagesTable.createdAt);
+      .from(messages)
+      .where(eq(messages.conversationId, params.data.id))
+      .orderBy(messages.createdAt);
 
-    const chatMessages = allMessages.map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
+    const chatContents = allMessages.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
     }));
 
     res.setHeader("Content-Type", "text/event-stream");
@@ -176,24 +176,24 @@ router.post(
 
     let fullResponse = "";
 
-    const stream = anthropic.messages.stream({
-      model: "claude-sonnet-4-6",
-      max_tokens: 8192,
-      system: SYSTEM_PROMPT,
-      messages: chatMessages,
+    const stream = await ai.models.generateContentStream({
+      model: "gemini-2.5-flash",
+      contents: chatContents,
+      config: {
+        maxOutputTokens: 8192,
+        systemInstruction: SYSTEM_INSTRUCTION,
+      },
     });
 
-    for await (const event of stream) {
-      if (
-        event.type === "content_block_delta" &&
-        event.delta.type === "text_delta"
-      ) {
-        fullResponse += event.delta.text;
-        res.write(`data: ${JSON.stringify({ content: event.delta.text })}\n\n`);
+    for await (const chunk of stream) {
+      const text = chunk.text;
+      if (text) {
+        fullResponse += text;
+        res.write(`data: ${JSON.stringify({ content: text })}\n\n`);
       }
     }
 
-    await db.insert(messagesTable).values({
+    await db.insert(messages).values({
       conversationId: params.data.id,
       role: "assistant",
       content: fullResponse,
