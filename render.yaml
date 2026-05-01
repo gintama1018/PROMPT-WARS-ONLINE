@@ -38,8 +38,5 @@ services:
       - path: /api/*
         destination: https://election-guide-api.onrender.com/api/*
 
-databases:
-  - name: election-guide-db
-    databaseName: election_guide
-    user: election_guide_user
-    plan: standard
+# Top-level databases were duplicated below services; the database
+# is declared/attached under the `election-guide-api` service above.
