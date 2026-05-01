@@ -18,30 +18,30 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary List all conversations
  */
-export const ListAnthropicConversationsResponseItem = zod.object({
+export const ListGeminiConversationsResponseItem = zod.object({
   id: zod.number(),
   title: zod.string(),
   createdAt: zod.coerce.date(),
 });
-export const ListAnthropicConversationsResponse = zod.array(
-  ListAnthropicConversationsResponseItem,
+export const ListGeminiConversationsResponse = zod.array(
+  ListGeminiConversationsResponseItem,
 );
 
 /**
  * @summary Create a new conversation
  */
-export const CreateAnthropicConversationBody = zod.object({
+export const CreateGeminiConversationBody = zod.object({
   title: zod.string(),
 });
 
 /**
  * @summary Get conversation with messages
  */
-export const GetAnthropicConversationParams = zod.object({
+export const GetGeminiConversationParams = zod.object({
   id: zod.coerce.number(),
 });
 
-export const GetAnthropicConversationResponse = zod.object({
+export const GetGeminiConversationResponse = zod.object({
   id: zod.number(),
   title: zod.string(),
   createdAt: zod.coerce.date(),
@@ -59,35 +59,47 @@ export const GetAnthropicConversationResponse = zod.object({
 /**
  * @summary Delete a conversation
  */
-export const DeleteAnthropicConversationParams = zod.object({
+export const DeleteGeminiConversationParams = zod.object({
   id: zod.coerce.number(),
 });
 
 /**
  * @summary List messages in a conversation
  */
-export const ListAnthropicMessagesParams = zod.object({
+export const ListGeminiMessagesParams = zod.object({
   id: zod.coerce.number(),
 });
 
-export const ListAnthropicMessagesResponseItem = zod.object({
+export const ListGeminiMessagesResponseItem = zod.object({
   id: zod.number(),
   conversationId: zod.number(),
   role: zod.string(),
   content: zod.string(),
   createdAt: zod.coerce.date(),
 });
-export const ListAnthropicMessagesResponse = zod.array(
-  ListAnthropicMessagesResponseItem,
+export const ListGeminiMessagesResponse = zod.array(
+  ListGeminiMessagesResponseItem,
 );
 
 /**
  * @summary Send a message and receive an AI response (SSE stream)
  */
-export const SendAnthropicMessageParams = zod.object({
+export const SendGeminiMessageParams = zod.object({
   id: zod.coerce.number(),
 });
 
-export const SendAnthropicMessageBody = zod.object({
+export const SendGeminiMessageBody = zod.object({
   content: zod.string(),
+});
+
+/**
+ * @summary Generate an image from a text prompt
+ */
+export const GenerateGeminiImageBody = zod.object({
+  prompt: zod.string(),
+});
+
+export const GenerateGeminiImageResponse = zod.object({
+  b64_json: zod.string(),
+  mimeType: zod.string(),
 });

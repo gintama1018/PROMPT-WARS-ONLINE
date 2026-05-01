@@ -10,8 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
-  - name: anthropic
-    description: Anthropic AI chat operations
+  - name: gemini
+    description: Gemini AI chat and image operations
 paths:
   /healthz:
     get:
@@ -26,10 +26,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
-  /anthropic/conversations:
+  /gemini/conversations:
     get:
-      operationId: listAnthropicConversations
-      tags: [anthropic]
+      operationId: listGeminiConversations
+      tags: [gemini]
       summary: List all conversations
       responses:
         "200":
@@ -39,28 +39,28 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/AnthropicConversation"
+                  $ref: "#/components/schemas/GeminiConversation"
     post:
-      operationId: createAnthropicConversation
-      tags: [anthropic]
+      operationId: createGeminiConversation
+      tags: [gemini]
       summary: Create a new conversation
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateAnthropicConversationBody"
+              $ref: "#/components/schemas/CreateGeminiConversationBody"
       responses:
         "201":
           description: Created conversation
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AnthropicConversation"
-  /anthropic/conversations/{id}:
+                $ref: "#/components/schemas/GeminiConversation"
+  /gemini/conversations/{id}:
     get:
-      operationId: getAnthropicConversation
-      tags: [anthropic]
+      operationId: getGeminiConversation
+      tags: [gemini]
       summary: Get conversation with messages
       parameters:
         - name: id
@@ -74,16 +74,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AnthropicConversationWithMessages"
+                $ref: "#/components/schemas/GeminiConversationWithMessages"
         "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AnthropicError"
+                $ref: "#/components/schemas/GeminiError"
     delete:
-      operationId: deleteAnthropicConversation
-      tags: [anthropic]
+      operationId: deleteGeminiConversation
+      tags: [gemini]
       summary: Delete a conversation
       parameters:
         - name: id
@@ -99,11 +99,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AnthropicError"
-  /anthropic/conversations/{id}/messages:
+                $ref: "#/components/schemas/GeminiError"
+  /gemini/conversations/{id}/messages:
     get:
-      operationId: listAnthropicMessages
-      tags: [anthropic]
+      operationId: listGeminiMessages
+      tags: [gemini]
       summary: List messages in a conversation
       parameters:
         - name: id
@@ -119,10 +119,10 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/AnthropicMessage"
+                  $ref: "#/components/schemas/GeminiMessage"
     post:
-      operationId: sendAnthropicMessage
-      tags: [anthropic]
+      operationId: sendGeminiMessage
+      tags: [gemini]
       summary: Send a message and receive an AI response (SSE stream)
       parameters:
         - name: id
@@ -135,12 +135,30 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SendAnthropicMessageBody"
+              $ref: "#/components/schemas/SendGeminiMessageBody"
       responses:
         "200":
           description: SSE stream of assistant response chunks
           content:
             text/event-stream: {}
+  /gemini/generate-image:
+    post:
+      operationId: generateGeminiImage
+      tags: [gemini]
+      summary: Generate an image from a text prompt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateGeminiImageBody"
+      responses:
+        "200":
+          description: Generated image data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateGeminiImageResponse"
 components:
   schemas:
     HealthStatus:
@@ -150,7 +168,7 @@ components:
           type: string
       required:
         - status
-    AnthropicConversation:
+    GeminiConversation:
       type: object
       properties:
         id:
@@ -164,7 +182,7 @@ components:
         - id
         - title
         - createdAt
-    AnthropicMessage:
+    GeminiMessage:
       type: object
       properties:
         id:
@@ -184,21 +202,21 @@ components:
         - role
         - content
         - createdAt
-    CreateAnthropicConversationBody:
+    CreateGeminiConversationBody:
       type: object
       properties:
         title:
           type: string
       required:
         - title
-    SendAnthropicMessageBody:
+    SendGeminiMessageBody:
       type: object
       properties:
         content:
           type: string
       required:
         - content
-    AnthropicConversationWithMessages:
+    GeminiConversationWithMessages:
       type: object
       properties:
         id:
@@ -211,13 +229,30 @@ components:
         messages:
           type: array
           items:
-            $ref: "#/components/schemas/AnthropicMessage"
+            $ref: "#/components/schemas/GeminiMessage"
       required:
         - id
         - title
         - createdAt
         - messages
-    AnthropicError:
+    GenerateGeminiImageBody:
+      type: object
+      properties:
+        prompt:
+          type: string
+      required:
+        - prompt
+    GenerateGeminiImageResponse:
+      type: object
+      properties:
+        b64_json:
+          type: string
+        mimeType:
+          type: string
+      required:
+        - b64_json
+        - mimeType
+    GeminiError:
       type: object
       properties:
         error:

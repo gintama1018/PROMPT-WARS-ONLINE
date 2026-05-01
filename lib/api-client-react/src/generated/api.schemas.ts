@@ -9,13 +9,13 @@ export interface HealthStatus {
   status: string;
 }
 
-export interface AnthropicConversation {
+export interface GeminiConversation {
   id: number;
   title: string;
   createdAt: string;
 }
 
-export interface AnthropicMessage {
+export interface GeminiMessage {
   id: number;
   conversationId: number;
   role: string;
@@ -23,21 +23,30 @@ export interface AnthropicMessage {
   createdAt: string;
 }
 
-export interface CreateAnthropicConversationBody {
+export interface CreateGeminiConversationBody {
   title: string;
 }
 
-export interface SendAnthropicMessageBody {
+export interface SendGeminiMessageBody {
   content: string;
 }
 
-export interface AnthropicConversationWithMessages {
+export interface GeminiConversationWithMessages {
   id: number;
   title: string;
   createdAt: string;
-  messages: AnthropicMessage[];
+  messages: GeminiMessage[];
 }
 
-export interface AnthropicError {
+export interface GenerateGeminiImageBody {
+  prompt: string;
+}
+
+export interface GenerateGeminiImageResponse {
+  b64_json: string;
+  mimeType: string;
+}
+
+export interface GeminiError {
   error: string;
 }
