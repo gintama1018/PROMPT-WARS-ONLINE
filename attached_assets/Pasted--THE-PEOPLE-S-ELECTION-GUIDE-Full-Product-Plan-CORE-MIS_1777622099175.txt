@@ -1,0 +1,99 @@
+🗳️ THE PEOPLE'S ELECTION GUIDE — Full Product Plan
+
+CORE MISSION
+Nonpartisan. Transparent. Citizen-first.
+No party logos. No political ads. No agenda. Just the process — explained clearly for every citizen.
+
+THE 7 PAGES
+PAGE 1 — HOME
+
+Big bold headline: "Democracy is Yours. Learn How It Works."
+Short mission statement (2 lines max)
+4 quick-access tiles: Register → Learn → Vote → Your Rights
+A live "Days to Next Election" countdown
+Language switcher (Hindi, Tamil, Bengali, Marathi, English etc.)
+
+
+PAGE 2 — WHAT IS AN ELECTION?
+
+Simple explainer: What elections are and WHY they matter
+Types of elections: General, State, Local, By-elections, Panchayat
+Key terms glossary (Constituency, Ballot, EVM, Candidate, Manifesto)
+"Did You Know?" fact cards
+Short animated infographic on how a vote travels from booth → result
+
+
+PAGE 3 — ELECTION TIMELINE (Interactive)
+
+A visual step-by-step journey from Announcement → Results
+Steps: Election Announced → Voter List Published → Nomination Filed → Campaigning → Silence Period → Voting Day → Counting → Results
+Each step is clickable — expands to explain what happens, who does what, and what the citizen should do at that stage
+Color-coded phases (Registration phase, Campaign phase, Voting phase)
+
+
+PAGE 4 — HOW TO VOTE (Citizen Step Guide)
+
+Step 1: Am I eligible? (Age, citizenship checker)
+Step 2: Am I on the voter list? (Link to official roll)
+Step 3: How to register / update my details
+Step 4: What to bring on voting day (Voter ID, Aadhar, alternatives)
+Step 5: What happens inside the polling booth
+Step 6: How to check if your vote was counted (VVPAT explanation)
+Downloadable checklist for voting day
+
+
+PAGE 5 — YOUR RIGHTS AS A VOTER
+
+Right to vote without pressure or influence
+Right to a secret ballot
+Right to file a complaint if denied
+Right to NOTA (None of the Above)
+What is a Model Code of Conduct — and why it protects YOU
+Who to call / where to report violations (helpline numbers)
+"What if I was bribed?" section — clear, judgment-free guidance
+
+
+PAGE 6 — ASK THE GUIDE (AI Chat Assistant)
+
+Conversational AI assistant powered by Claude
+Answers questions like:
+
+"How do I register if I just turned 18?"
+"What if my name isn't on the list?"
+"Can I vote if I moved cities?"
+"What is Form 6?"
+
+
+Strictly nonpartisan — no party opinions, no political bias
+Quick-reply suggestion chips for common questions
+Disclaimer: "For official decisions, always verify with your local Election Commission"
+
+
+PAGE 7 — QUIZ: HOW MUCH DO YOU KNOW?
+
+8 quick questions on the election process
+Multiple choice, instant feedback
+Score card at the end with "Learn More" links to relevant pages
+Shareable result: "I scored 7/8 on the People's Election Quiz!"
+Replayable with shuffled questions
+
+
+DESIGN PRINCIPLES
+RuleWhyZero party colors or logosStays fully neutralPlain language, no jargonAccessible to all literacy levelsMobile-first layoutMost users are on phonesMulti-language supportIndia has 22 official languagesOfficial source links onlyECI, Voter Helpline 1950No ads, no trackersPublic tool, not a product
+
+WHAT MAKES IT DIFFERENT
+
+Talks to the citizen, not at them
+Explains what happens behind the scenes — not just "go vote"
+Covers what to do when things go wrong
+The AI assistant handles the long tail of weird, specific questions no FAQ covers
+Built like a civic right, not a government brochure
+
+
+TECH STACK (Suggested)
+
+Frontend: React or plain HTML/CSS/JS (fast, works on low-end phones)
+AI Chat: Claude API (nonpartisan system prompt locked in)
+Languages: i18n JSON files per language
+Hosting: Free (GitHub Pages or Vercel) — keeps it public and free forever
+Data: No user data stored. No logins needed.
